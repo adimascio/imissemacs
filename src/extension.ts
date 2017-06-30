@@ -3,25 +3,27 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
+import { whitespaceRange } from './editutil';
+
+
+function normalizeSpaces(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
+    const position = textEditor.selection.active;
+    const line = textEditor.document.lineAt(position.line).text;
+    const currentColumn = position.character;
+    const startstop = whitespaceRange(line, currentColumn);
+    if (startstop === null) {
+        return;
+    }
+    const [pos1, pos2] = startstop.map(idx => new vscode.Position(position.line, idx));;
+    const range = new vscode.Range(pos1, pos2);
+    edit.replace(range, ' ');
+}
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "imissemacs" is now active!');
-
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with  registerCommand
-    // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand('extension.sayHello', () => {
-        // The code you place here will be executed every time your command is executed
-
-        // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World!');
-    });
-
-    context.subscriptions.push(disposable);
+    context.subscriptions.push(
+        vscode.commands.registerTextEditorCommand('extension.normalizeSpaces', normalizeSpaces));
 }
 
 // this method is called when your extension is deactivated
