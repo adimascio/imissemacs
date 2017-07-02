@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 import { whitespaceRange } from './editutil';
 
 
-function normalizeSpaces(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
+export function normalizeSpaces(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
     const position = textEditor.selection.active;
     const line = textEditor.document.lineAt(position.line).text;
     const currentColumn = position.character;
