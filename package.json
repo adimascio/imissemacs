@@ -15,7 +15,8 @@
         "onCommand:extension.switchCharacters",
         "onCommand:extension.gotoBeginningOfLine",
         "onCommand:extension.gotoEndOfLine",
-        "onCommand:extension.commentAndNextLine"
+        "onCommand:extension.commentAndNextLine",
+        "onCommand:extension.cutEndOfLine"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -43,6 +44,11 @@
             {
                 "command": "extension.commentAndNextLine",
                 "key": "alt+/",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.cutEndOfLine",
+                "key": "alt+k",
                 "when": "editorTextFocus"
             }
         ],

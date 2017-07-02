@@ -60,6 +60,16 @@ export function commentAndNextLine(textEditor: vscode.TextEditor, edit: vscode.T
     })
 }
 
+
+export function cutEndOfLine(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
+    const position = textEditor.selection.active;
+    const line = textEditor.document.lineAt(position.line).text;
+    const selectionEnd = (position.character === 0) ? new vscode.Position(position.line + 1, 0) : new vscode.Position(position.line, line.length);
+    textEditor.selection = new vscode.Selection(position, selectionEnd);
+    vscode.commands.executeCommand('editor.action.clipboardCutAction');
+}
+
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -73,6 +83,8 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerTextEditorCommand('extension.gotoEndOfLine', gotoEndOfLine));
     context.subscriptions.push(
         vscode.commands.registerTextEditorCommand('extension.commentAndNextLine', commentAndNextLine));
+    context.subscriptions.push(
+        vscode.commands.registerTextEditorCommand('extension.cutEndOfLine', cutEndOfLine));
 }
 
 // this method is called when your extension is deactivated
