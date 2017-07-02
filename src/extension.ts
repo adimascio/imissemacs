@@ -33,7 +33,22 @@ export function switchCharacters(textEditor: vscode.TextEditor, edit: vscode.Tex
         nextPosition
     );
     edit.replace(range, switched);
-   textEditor.selection = new vscode.Selection(nextPosition, nextPosition);
+    textEditor.selection = new vscode.Selection(nextPosition, nextPosition);
+}
+
+
+export function gotoEndOfLine(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
+    const { line: lineno } = textEditor.selection.active;
+    const line = textEditor.document.lineAt(lineno).text;
+    const endOfLine = new vscode.Position(lineno, line.length);
+    textEditor.selection = new vscode.Selection(endOfLine, endOfLine);
+}
+
+
+export function gotoBeginningOfLine(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
+    const { line: lineno } = textEditor.selection.active;
+    const beginningOfLine = new vscode.Position(lineno, 0);
+    textEditor.selection = new vscode.Selection(beginningOfLine, beginningOfLine);
 }
 
 
@@ -44,6 +59,10 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerTextEditorCommand('extension.normalizeSpaces', normalizeSpaces));
     context.subscriptions.push(
         vscode.commands.registerTextEditorCommand('extension.switchCharacters', switchCharacters));
+    context.subscriptions.push(
+        vscode.commands.registerTextEditorCommand('extension.gotoBeginningOfLine', gotoBeginningOfLine));
+    context.subscriptions.push(
+        vscode.commands.registerTextEditorCommand('extension.gotoEndOfLine', gotoEndOfLine));
 }
 
 // this method is called when your extension is deactivated

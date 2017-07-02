@@ -12,7 +12,9 @@
     ],
     "activationEvents": [
         "onCommand:extension.normalizeSpaces",
-        "onCommand:extension.switchCharacters"
+        "onCommand:extension.switchCharacters",
+        "onCommand:extension.gotoBeginningOfLine",
+        "onCommand:extension.gotoEndOfLine"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -26,12 +28,22 @@
                 "command": "extension.switchCharacters",
                 "key": "ctrl+t",
                 "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.gotoEndOfLine",
+                "key": "ctrl+shift+e",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.gotoBeginningOfLine",
+                "key": "ctrl+shift+a",
+                "when": "editorTextFocus"
             }
         ],
         "commands": [
             {
-                "command": "extension.sayHello",
-                "title": "Hello World"
+                "command": "extension.gotoBeginningOfLine",
+                "title": "Goto beginning of line"
             }
         ]
     },
