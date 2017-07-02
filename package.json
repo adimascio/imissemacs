@@ -11,7 +11,8 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.normalizeSpaces"
+        "onCommand:extension.normalizeSpaces",
+        "onCommand:extension.switchCharacters"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -19,6 +20,11 @@
             {
                 "command": "extension.normalizeSpaces",
                 "key": "alt+space",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.switchCharacters",
+                "key": "ctrl+t",
                 "when": "editorTextFocus"
             }
         ],

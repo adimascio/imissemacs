@@ -19,11 +19,31 @@ export function normalizeSpaces(textEditor: vscode.TextEditor, edit: vscode.Text
     edit.replace(range, ' ');
 }
 
+
+export function switchCharacters(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
+    const position = textEditor.selection.active;
+    const line = textEditor.document.lineAt(position.line).text;
+    if (position.character == 0) {
+        return;  // don't switch on first column
+    }
+    const switched = line.charAt(position.character) + line.charAt(position.character - 1);
+    const nextPosition = new vscode.Position(position.line, position.character + 1)
+    const range = new vscode.Range(
+        new vscode.Position(position.line, position.character - 1),
+        nextPosition
+    );
+    edit.replace(range, switched);
+   textEditor.selection = new vscode.Selection(nextPosition, nextPosition);
+}
+
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerTextEditorCommand('extension.normalizeSpaces', normalizeSpaces));
+    context.subscriptions.push(
+        vscode.commands.registerTextEditorCommand('extension.switchCharacters', switchCharacters));
 }
 
 // this method is called when your extension is deactivated
