@@ -14,7 +14,8 @@
         "onCommand:extension.normalizeSpaces",
         "onCommand:extension.switchCharacters",
         "onCommand:extension.gotoBeginningOfLine",
-        "onCommand:extension.gotoEndOfLine"
+        "onCommand:extension.gotoEndOfLine",
+        "onCommand:extension.commentAndNextLine"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -37,6 +38,11 @@
             {
                 "command": "extension.gotoBeginningOfLine",
                 "key": "ctrl+shift+a",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.commentAndNextLine",
+                "key": "alt+/",
                 "when": "editorTextFocus"
             }
         ],

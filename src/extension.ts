@@ -52,6 +52,14 @@ export function gotoBeginningOfLine(textEditor: vscode.TextEditor, edit: vscode.
 }
 
 
+export function commentAndNextLine(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
+    const position = textEditor.selection.active;
+    const nextLine = new vscode.Position(position.line + 1, position.character);
+    vscode.commands.executeCommand('editor.action.commentLine').then(() => {
+        textEditor.selection = new vscode.Selection(nextLine, nextLine);
+    })
+}
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -63,6 +71,8 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerTextEditorCommand('extension.gotoBeginningOfLine', gotoBeginningOfLine));
     context.subscriptions.push(
         vscode.commands.registerTextEditorCommand('extension.gotoEndOfLine', gotoEndOfLine));
+    context.subscriptions.push(
+        vscode.commands.registerTextEditorCommand('extension.commentAndNextLine', commentAndNextLine));
 }
 
 // this method is called when your extension is deactivated
