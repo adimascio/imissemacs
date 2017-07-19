@@ -7,16 +7,18 @@ import { whitespaceRange } from './editutil';
 
 
 export function normalizeSpaces(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
-    const position = textEditor.selection.active;
-    const line = textEditor.document.lineAt(position.line).text;
-    const currentColumn = position.character;
-    const startstop = whitespaceRange(line, currentColumn);
-    if (startstop === null) {
-        return;
-    }
-    const [pos1, pos2] = startstop.map(idx => new vscode.Position(position.line, idx));;
-    const range = new vscode.Range(pos1, pos2);
-    edit.replace(range, ' ');
+    textEditor.selections.forEach(selection => {
+        const position = selection.active;
+        const line = textEditor.document.lineAt(position.line).text;
+        const currentColumn = position.character;
+        const startstop = whitespaceRange(line, currentColumn);
+        if (startstop === null) {
+            return;
+        }
+        const [pos1, pos2] = startstop.map(idx => new vscode.Position(position.line, idx));;
+        const range = new vscode.Range(pos1, pos2);
+        edit.replace(range, ' ');
+    });
 }
 
 
