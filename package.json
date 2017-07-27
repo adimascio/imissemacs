@@ -15,6 +15,10 @@
         "onCommand:extension.switchCharacters",
         "onCommand:extension.gotoBeginningOfLine",
         "onCommand:extension.gotoEndOfLine",
+        "onCommand:extension.gotoBeginningOfFile",
+        "onCommand:extension.gotoEndOfFile",
+        "onCommand:extension.selectToBeginningOfFile",
+        "onCommand:extension.selectToEndOfFile",
         "onCommand:extension.commentAndNextLine",
         "onCommand:extension.cutEndOfLine"
     ],
@@ -42,6 +46,26 @@
                 "when": "editorTextFocus"
             },
             {
+                "command": "extension.gotoBeginningOfFile",
+                "key": "alt+shift+,",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.gotoEndOfFile",
+                "key": "alt+shift+.",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.selectToBeginningOfFile",
+                "key": "ctrl+alt+shift+,",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.selectToEndOfFile",
+                "key": "ctrl+alt+shift+.",
+                "when": "editorTextFocus"
+            },
+            {
                 "command": "extension.commentAndNextLine",
                 "key": "alt+/",
                 "when": "editorTextFocus"
@@ -56,6 +80,26 @@
             {
                 "command": "extension.gotoBeginningOfLine",
                 "title": "Goto beginning of line"
+            },
+            {
+                "command": "extension.gotoBeginningEndOfLine",
+                "title": "Goto end of line"
+            },
+            {
+                "command": "extension.gotoBeginningOfFile",
+                "title": "Goto beginning of file"
+            },
+            {
+                "command": "extension.gotoEndOfFile",
+                "title": "Goto end of file"
+            },
+            {
+                "command": "extension.selectToBeginningOfFile",
+                "title": "Select up to beginning of file"
+            },
+            {
+                "command": "extension.selectToEndOfFile",
+                "title": "Select down to end of file"
             }
         ]
     },

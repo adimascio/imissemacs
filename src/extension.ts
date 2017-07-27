@@ -53,6 +53,22 @@ export function gotoBeginningOfLine(textEditor: vscode.TextEditor, edit: vscode.
     textEditor.selection = new vscode.Selection(beginningOfLine, beginningOfLine);
 }
 
+export function gotoBeginningOfFile(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
+    vscode.commands.executeCommand("cursorTop");
+}
+
+export function gotoEndOfFile(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
+    vscode.commands.executeCommand("cursorBottom");
+}
+
+export function selectToBeginningOfFile(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
+    vscode.commands.executeCommand("cursorTopSelect");
+}
+
+export function selectToEndOfFile(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
+    vscode.commands.executeCommand("cursorBottomSelect");
+}
+
 
 export function commentAndNextLine(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
     const position = textEditor.selection.active;
@@ -83,6 +99,14 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerTextEditorCommand('extension.gotoBeginningOfLine', gotoBeginningOfLine));
     context.subscriptions.push(
         vscode.commands.registerTextEditorCommand('extension.gotoEndOfLine', gotoEndOfLine));
+    context.subscriptions.push(
+        vscode.commands.registerTextEditorCommand('extension.gotoBeginningOfFile', gotoBeginningOfFile));
+    context.subscriptions.push(
+        vscode.commands.registerTextEditorCommand('extension.gotoEndOfFile', gotoEndOfFile));
+    context.subscriptions.push(
+        vscode.commands.registerTextEditorCommand('extension.selectToBeginningOfFile', selectToBeginningOfFile));
+    context.subscriptions.push(
+        vscode.commands.registerTextEditorCommand('extension.selectToEndOfFile', selectToEndOfFile));
     context.subscriptions.push(
         vscode.commands.registerTextEditorCommand('extension.commentAndNextLine', commentAndNextLine));
     context.subscriptions.push(
