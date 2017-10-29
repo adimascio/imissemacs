@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 
 import { whitespaceRange } from './editutil';
 import { underline } from "./restructuredtext";
+import { newlineAndIndent } from "./python";
 
 
 export function normalizeSpaces(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
@@ -114,6 +115,8 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerTextEditorCommand('extension.cutEndOfLine', cutEndOfLine));
     context.subscriptions.push(
         vscode.commands.registerTextEditorCommand('extension.restructuredtext.underline', underline));
+    context.subscriptions.push(
+        vscode.commands.registerTextEditorCommand('extension.python.newlineAndIndent', newlineAndIndent));
 }
 
 // this method is called when your extension is deactivated

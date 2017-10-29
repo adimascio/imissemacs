@@ -21,7 +21,8 @@
         "onCommand:extension.selectToEndOfFile",
         "onCommand:extension.commentAndNextLine",
         "onCommand:extension.cutEndOfLine",
-        "onCommand:extension.restructuredtext.underline"
+        "onCommand:extension.restructuredtext.underline",
+        "onCommand:extension.python.newlineAndIndent"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -79,6 +80,11 @@
             {
                 "command": "extension.restructuredtext.underline",
                 "key": "ctrl+="
+            },
+            {
+                "command": "extension.python.newlineAndIndent",
+                "key": "enter",
+                "when": "editorTextFocus && !editorHasSelection"
             }
         ],
         "commands": [
@@ -109,6 +115,10 @@
             {
                 "command": "extension.restructuredtext.underline",
                 "title": "underline current line"
+            },
+            {
+                "command": "extension.python.newlineAndIndent",
+                "title": "newline and auto indent"
             }
         ],
         "menus": {
@@ -116,6 +126,9 @@
                 {
                     "command": "extension.restructuredtext.underline",
                     "when": "resourceLanguageId == restructuredtext"
+                },
+                {
+                    "command": "extension.python.newlineAndIndent"
                 }
             ]
         }
