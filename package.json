@@ -20,7 +20,8 @@
         "onCommand:extension.selectToBeginningOfFile",
         "onCommand:extension.selectToEndOfFile",
         "onCommand:extension.commentAndNextLine",
-        "onCommand:extension.cutEndOfLine"
+        "onCommand:extension.cutEndOfLine",
+        "onCommand:extension.restructuredtext.underline"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -74,6 +75,10 @@
                 "command": "extension.cutEndOfLine",
                 "key": "alt+k",
                 "when": "editorTextFocus"
+            },
+            {
+                "command": "extension.restructuredtext.underline",
+                "key": "ctrl+="
             }
         ],
         "commands": [
@@ -100,8 +105,20 @@
             {
                 "command": "extension.selectToEndOfFile",
                 "title": "Select down to end of file"
+            },
+            {
+                "command": "extension.restructuredtext.underline",
+                "title": "underline current line"
             }
-        ]
+        ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "extension.restructuredtext.underline",
+                    "when": "resourceLanguageId == restructuredtext"
+                }
+            ]
+        }
     },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
