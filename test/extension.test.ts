@@ -5,81 +5,58 @@ import * as imissemacs from "../src/extension";
 import * as restructuredtext from "../src/restructuredtext";
 
 
+async function openTextContent(content: string, language = 'txt'): Promise<vscode.TextEditor> {
+    const document = await vscode.workspace.openTextDocument({ content, language });
+    return await vscode.window.showTextDocument(document);
+}
+
+
+function moveCursorTo(editor: vscode.TextEditor, lineno: number, colno = 0): vscode.Position {
+    const position = new vscode.Position(lineno, colno);
+    editor.selection = new vscode.Selection(position, position);
+    return position;
+}
+
+
+
 suite("I Miss Emacs Tests", () => {
-    test("editor wipes out extra spaces", done => {
-        let textEditor: vscode.TextEditor;
-        let textDocument: vscode.TextDocument;
-        vscode.workspace.openTextDocument({ content: 'hello     world', language: 'txt' }).then(document => {
-            textDocument = document;
-            return vscode.window.showTextDocument(textDocument);
-        }).then(editor => {
-            let textEditor = editor;
-            const newpos = new vscode.Position(0, 6);
-            editor.selection = new vscode.Selection(newpos, newpos);
-            return editor.edit(edit => {
-                imissemacs.normalizeSpaces(editor, edit, null);
-            });
-        }).then(() => {
-            assert.equal(textDocument.getText(), 'hello world');
-        }).then(done, done);
+    test("editor wipes out extra spaces", async function() {
+        const editor = await openTextContent('hello     world');
+        moveCursorTo(editor, 0, 6);
+        const success = await editor.edit(edit => {
+            imissemacs.normalizeSpaces(editor, edit, null);
+        });
+        assert.equal(editor.document.getText(), 'hello world');
     });
 
-    test("editor switches characters", done => {
-        let textEditor: vscode.TextEditor;
-        let textDocument: vscode.TextDocument;
-        vscode.workspace.openTextDocument({ content: 'hello', language: 'txt' }).then(document => {
-            textDocument = document;
-            return vscode.window.showTextDocument(textDocument);
-        }).then(editor => {
-            let textEditor = editor;
-            const newpos = new vscode.Position(0, 1);
-            editor.selection = new vscode.Selection(newpos, newpos);
-            return editor.edit(edit => {
-                imissemacs.switchCharacters(editor, edit, null);
-            });
-        }).then(() => {
-            assert.equal(textDocument.getText(), 'ehllo');
-            // assert.equal(textEditor.selection.active.character, 2);
-        }).then(done, done);
+    test("editor switches characters", async function () {
+        const editor = await openTextContent('hello');
+        moveCursorTo(editor, 0, 1);
+        const success = await editor.edit(edit => {
+            imissemacs.switchCharacters(editor, edit, null);
+        });
+        assert.equal(editor.document.getText(), 'ehllo');
     });
 });
 
 
 suite("restructuredtext tests", () => {
-    test("editor underlines title", done => {
-        let textEditor: vscode.TextEditor;
-        let textDocument: vscode.TextDocument;
-        vscode.workspace.openTextDocument({ content: 'hello', language: 'reStructuredText' }).then(document => {
-            textDocument = document;
-            return vscode.window.showTextDocument(textDocument);
-        }).then(editor => {
-            let textEditor = editor;
-            const newpos = new vscode.Position(0, 5);
-            editor.selection = new vscode.Selection(newpos, newpos);
-            return editor.edit(edit => {
-                restructuredtext.underline(editor, edit, null);
-            });
-        }).then(() => {
-            assert.equal(textDocument.getText(), 'hello\n=====');
-        }).then(done, done);
+    test("editor underlines title", async function () {
+        const editor = await openTextContent('hello', 'rst');
+        moveCursorTo(editor, 0, 5);
+        const success = await editor.edit(edit => {
+            restructuredtext.underline(editor, edit, null);
+        });
+        assert.equal(editor.document.getText(), 'hello\n=====');
     });
 
-    test("editor toggles title level", done => {
-        let textEditor: vscode.TextEditor;
-        let textDocument: vscode.TextDocument;
-        vscode.workspace.openTextDocument({ content: 'hello\n=====', language: 'reStructuredText' }).then(document => {
-            textDocument = document;
-            return vscode.window.showTextDocument(textDocument);
-        }).then(editor => {
-            let textEditor = editor;
-            const newpos = new vscode.Position(0, 5);
-            editor.selection = new vscode.Selection(newpos, newpos);
-            return editor.edit(edit => {
-                restructuredtext.underline(editor, edit, null);
-            });
-        }).then(() => {
-            assert.equal(textDocument.getText(), 'hello\n-----');
-        }).then(done, done);
+    test("editor toggles title level", async function() {
+        const editor = await openTextContent('hello\n=====', 'rst');
+        moveCursorTo(editor, 0, 5);
+        const success = await editor.edit(edit => {
+            restructuredtext.underline(editor, edit, null);
+        });
+        assert.equal(editor.document.getText(), 'hello\n-----');
     });
 
     test("nextLineChar", () => {
