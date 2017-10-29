@@ -1,65 +1,24 @@
 # imissemacs README
 
-This is the README for your extension "imissemacs". After writing up a brief description, we recommend including the following sections.
-
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+This extension backports a few standard behaviour from emacs, such as:
 
-For example if there is an image subfolder under your extension project workspace:
+- `switchCharacters`: switches the character below the cursor with the previous one, bound on `ctrl+t`
+- `underline`: in `restructuredtext` mode, tries to adjust / toggle adorments for the section title
+- `newlineAndIndent`: in python mode, inserts a new line and tries go to the most appropriate indentation level
 
-\!\[feature X\]\(images/feature-x.png\)
+This extension also adds extra keybindings (i.e does not replace existing ones):
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- `ctrl+a`: go to the beginning of the line,
+- `ctrl+e`: go to the end of the line,
+- `alt-<`: go to the beginning of the file,
+- `alt->`: go to the end of the file,
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+None
 
-## Extension Settings
+### 0.1.0
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on OSX or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on OSX or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (OSX) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Initial release of imissemacs
