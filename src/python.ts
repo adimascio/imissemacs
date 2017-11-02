@@ -13,8 +13,8 @@ export function trimcomment(text: string): string {
 }
 
 
-function lastNonEmptyChar(text: string): string {
-    const trimmed = trimcomment(text);
+function lastNonEmptyChar(text: string, colno: number): string {
+    const trimmed = trimcomment(text.slice(0, colno));
     return trimmed ? trimmed[trimmed.length - 1] : null;
 }
 
@@ -32,17 +32,18 @@ function dedentAfterLine(line: vscode.TextLine): boolean {
 }
 
 
-function nextIndentationLevel(document: vscode.TextDocument, lineno: number): number {
+function nextIndentationLevel(document: vscode.TextDocument, lineno: number, colno: number): number {
     let indent = 0;
 
-    while (lineno > 0) {
+    while (lineno >= 0) {
         const line = document.lineAt(lineno);
         const lineIndent = indentationLevel(line);
+        console.log('testing line', line.text);
         if (dedentAfterLine(line)) {
             indent = lineIndent - 4;
             break;
         }
-        const lastchar = lastNonEmptyChar(line.text);
+        const lastchar = lastNonEmptyChar(line.text, colno);
         if (lastchar === '(' || lastchar === '{' || lastchar === '[' || lastchar === ':') {
             indent = lineIndent + 4;
             break;
@@ -63,12 +64,12 @@ function nextIndentationLevel(document: vscode.TextDocument, lineno: number): nu
 export function newlineAndIndent(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
     const position = textEditor.selection.active;
     const line = textEditor.document.lineAt(position.line);
-    const insertionPoint = new vscode.Position(position.line, line.text.length);
+    const insertionPoint = new vscode.Position(position.line, position.character);
     let toInsert = '\n';
 
     try {
         if (textEditor.document.languageId === 'python') {
-            const indent = nextIndentationLevel(textEditor.document, line.lineNumber);
+            const indent = nextIndentationLevel(textEditor.document, line.lineNumber, position.character);
             if (indent !== null) {
                 toInsert = '\n' + ' '.repeat(indent);
             }

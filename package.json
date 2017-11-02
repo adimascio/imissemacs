@@ -84,7 +84,7 @@
             {
                 "command": "extension.python.newlineAndIndent",
                 "key": "enter",
-                "when": "editorTextFocus && !editorHasSelection"
+                "when": "editorTextFocus && !editorHasSelection && resourceLanguageId == python"
             }
         ],
         "commands": [
