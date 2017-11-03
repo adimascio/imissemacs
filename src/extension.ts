@@ -46,6 +46,7 @@ export function gotoEndOfLine(textEditor: vscode.TextEditor, edit: vscode.TextEd
     const line = textEditor.document.lineAt(lineno).text;
     const endOfLine = new vscode.Position(lineno, line.length);
     textEditor.selection = new vscode.Selection(endOfLine, endOfLine);
+    textEditor.revealRange(new vscode.Range(endOfLine, endOfLine));
 }
 
 
@@ -53,6 +54,7 @@ export function gotoBeginningOfLine(textEditor: vscode.TextEditor, edit: vscode.
     const { line: lineno } = textEditor.selection.active;
     const beginningOfLine = new vscode.Position(lineno, 0);
     textEditor.selection = new vscode.Selection(beginningOfLine, beginningOfLine);
+    textEditor.revealRange(new vscode.Range(beginningOfLine, beginningOfLine));
 }
 
 export function gotoBeginningOfFile(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
