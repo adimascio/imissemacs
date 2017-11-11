@@ -191,6 +191,40 @@ suite("python tests", () => {
         assert.equal(newPosition.character, 0);
     });
 
+    test('indent inside list comprehension', async function () {
+        const editor = await openTextContent(`
+class A:
+    def f(self):
+        return [x*2 for x in range(5)]
+`, 'python');
+        const newPosition = await pressEnterAt(editor, 3, 37);
+        assert.equal(editor.document.getText(), `
+class A:
+    def f(self):
+        return [x*2 for x in range(5)
+                ]
+`);
+        assert.equal(newPosition.line, 4);
+        assert.equal(newPosition.character, 16);
+    })
+
+    test('indent inside list comprehension 2', async function () {
+        const editor = await openTextContent(`
+class A:
+    def f(self):
+        return [x*2 for x in range(5)]
+`, 'python');
+        const newPosition = await pressEnterAt(editor, 3, 29);
+        assert.equal(editor.document.getText(), `
+class A:
+    def f(self):
+        return [x*2 for x in
+                range(5)]
+`);
+        assert.equal(newPosition.line, 4);
+        assert.equal(newPosition.character, 16);
+    })
+
 });
 
 

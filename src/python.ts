@@ -26,38 +26,69 @@ function indentationLevel(line: vscode.TextLine): number {
     return 0;
 }
 
+function insideExpression(line: vscode.TextLine, colno: number): boolean {
+    const opening = new Set('{[(');
+    const closing = new Set('}])');
+    let level = 0;
 
-function dedentAfterLine(line: vscode.TextLine): boolean {
+    for (let i = 0; i < colno; i++) {
+        const letter = line.text[i];
+        if (opening.has(letter)) {
+            level++;
+        } else if (closing.has(letter)) {
+            level--;
+        }
+    }
+    return level > 0;
+}
+
+function dedentAfterLine(line: vscode.TextLine, colno: number): boolean {
+    console.log('inside expression', line.text, colno, insideExpression(line, colno))
+    if (insideExpression(line, colno)) {
+        return false;
+    }
     return DEDENT_STATEMENTS_RGX.test(line.text);
 }
 
+function lastOpeningIndex(line: vscode.TextLine, colno: number): number {
+    const matching = new Map([['{', '}'], ['(', ')'], ['[', ']']]);
+    const closing = new Set(matching.values());
+    let closingExpected = null;
+    const unmatched = [];
+    for (let i = 0; i < colno; i++) {
+        const c = line.text[i];
+        if (matching.has(c)) {
+            unmatched.push({ char: c, index: i });
+            closingExpected = matching.get(c);
+        } else if (c === closingExpected) {
+            unmatched.pop();
+            if (unmatched.length) {
+                closingExpected = matching.get(unmatched[unmatched.length - 1].char);
+            }
+        }
+    }
+    if (unmatched.length) {
+        return unmatched[unmatched.length - 1].index;
+    }
+    return -1;
+}
 
 function nextIndentationLevel(document: vscode.TextDocument, lineno: number, colno: number): number {
-    let indent = 0;
-
     while (lineno >= 0) {
         const line = document.lineAt(lineno);
         const lineIndent = indentationLevel(line);
-        console.log('testing line', line.text);
-        if (dedentAfterLine(line)) {
-            indent = lineIndent - 4;
-            break;
+        if (dedentAfterLine(line, colno)) {
+            return lineIndent - 4;
         }
         const lastchar = lastNonEmptyChar(line.text, colno);
         if (lastchar === '(' || lastchar === '{' || lastchar === '[' || lastchar === ':') {
-            indent = lineIndent + 4;
-            break;
-        } else if (lastchar == ',') {
-            const lastParenIndex = line.text.lastIndexOf('(');
-            indent = lastParenIndex === -1 ? lineIndent : lastParenIndex + 1;
-            break;
-        } else if (lastchar) {
-            indent = lineIndent;
-            break;
+            return lineIndent + 4;
+        } else {
+            const lastParenIndex = lastOpeningIndex(line, colno);
+            console.log('last paren index', typeof lastParenIndex, lastParenIndex);
+            return lastParenIndex === -1 ? lineIndent : lastParenIndex + 1;
         }
-        lineno--;
     }
-    return Math.max(indent, 0);
 }
 
 
