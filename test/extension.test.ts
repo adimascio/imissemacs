@@ -157,8 +157,6 @@ suite("python tests", () => {
         assert.equal(editor.document.getText(), expectedContent);
         assert.equal(newPosition.line, 3);
         assert.equal(newPosition.character, 17);
-        const done = await vscode.commands.executeCommand('workbench.action.closeAllEditors');
-        console.log('done', done);
     });
 
     test('dedent after break', async function () {
@@ -168,11 +166,33 @@ suite("python tests", () => {
         assert.equal(editor.document.getText(), expectedContent);
         assert.equal(newPosition.line, 9);
         assert.equal(newPosition.character, 12);
-        const done = await vscode.commands.executeCommand('workbench.action.closeAllEditors');
-        console.log('done', done);
+    });
+
+    test('dedent after raise', async function () {
+        const editor = await openTextContent(`def f():
+    raise ValueError('oops')`);
+        const newPosition = await pressEnterAt(editor, 1, 28);
+        const expectedContent = await readFile(inputpath('indented2_sample.py'));
+        assert.equal(editor.document.getText(), `def f():
+    raise ValueError('oops')
+`);
+        assert.equal(newPosition.line, 2);
+        assert.equal(newPosition.character, 0);
+    });
+
+    test('dedent after re-raise', async function () {
+        const editor = await openTextContent(`def f():
+    raise`);
+        const newPosition = await pressEnterAt(editor, 1, 9);
+        assert.equal(editor.document.getText(), `def f():
+    raise
+`);
+        assert.equal(newPosition.line, 2);
+        assert.equal(newPosition.character, 0);
     });
 
 });
+
 
 export async function closeActiveWindows(): Promise<any> {
     // code copied from https://github.com/DonJayamanne/pythonVSCode/ Copyright (c) 2015 DonJayamanne

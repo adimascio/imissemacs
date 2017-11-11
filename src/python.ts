@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 
 
 const LINE_RGX = /\s*(.*?)\s*(#.*)?$/;
-const DEDENT_STATEMENTS_RGX = /\s+(return|continue|break)\b/;
+const DEDENT_STATEMENTS_RGX = /\s+(return|continue|break|raise)\b/;
 
 
 export function trimcomment(text: string): string {
