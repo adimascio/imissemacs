@@ -84,7 +84,7 @@
             {
                 "command": "extension.python.newlineAndIndent",
                 "key": "enter",
-                "when": "editorTextFocus && !editorHasSelection && resourceLanguageId == python"
+                "when": "editorTextFocus && !editorHasSelection && resourceLangId == python"
             }
         ],
         "commands": [
@@ -125,7 +125,7 @@
             "commandPalette": [
                 {
                     "command": "extension.restructuredtext.underline",
-                    "when": "resourceLanguageId == restructuredtext"
+                    "when": "resourceLangId == restructuredtext"
                 },
                 {
                     "command": "extension.python.newlineAndIndent"
