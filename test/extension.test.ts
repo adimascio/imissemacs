@@ -106,16 +106,16 @@ suite("restructuredtext tests", () => {
 
 suite("python tests", () => {
 
-    test("module level indentation on end of line", async function () {
-        const editor = await openTextContent('x = 1', 'python');
-        moveCursorTo(editor, 0, 5);
-        const success = await editor.edit(edit => {
-            python.newlineAndIndent(editor, edit, null);
-        });
-        assert.equal(editor.document.getText(), 'x = 1\n');
-        assert.equal(editor.selection.active.line, 1);
-        assert.equal(editor.selection.active.character, 0);
-    });
+//     test("module level indentation on end of line", async function () {
+//         const editor = await openTextContent('x = 1', 'python');
+//         moveCursorTo(editor, 0, 5);
+//         const success = await editor.edit(edit => {
+//             python.newlineAndIndent(editor, edit, null);
+//         });
+//         assert.equal(editor.document.getText(), 'x = 1\n');
+//         assert.equal(editor.selection.active.line, 1);
+//         assert.equal(editor.selection.active.character, 0);
+//     });
 
     test("module level indentation on beginning of line", async function () {
         const editor = await openTextContent('x = 1', 'python');

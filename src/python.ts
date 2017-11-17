@@ -3,21 +3,27 @@
  */
 import * as vscode from 'vscode';
 
-
-const LINE_RGX = /\s*(.*?)\s*(#.*)?$/;
+const LINE_RGX = /(\s*)(.*?)\s*(#.*)?$/;
 const DEDENT_STATEMENTS_RGX = /\s+(return|continue|break|raise)\b/;
+const OPENINGS = new Set('{[(');
+const CLOSINGS = new Set('}])');
+const MATCHING_MAP = {
+    '(': ')',
+    '{': '}',
+    '[': ']',
+    ')': '(',
+    '}': '{',
+    ']': '[',
+};
 
-
-export function trimcomment(text: string): string {
-    return LINE_RGX.exec(text)[1];
+export function rtrimcomment(text: string, colno: number): string {
+    const match = LINE_RGX.exec(text.slice(0, colno));
+    if (match[2]) {
+        // found non empty string
+        return match[1] + match[2];
+    }
+    return '';
 }
-
-
-function lastNonEmptyChar(text: string, colno: number): string {
-    const trimmed = trimcomment(text.slice(0, colno));
-    return trimmed ? trimmed[trimmed.length - 1] : null;
-}
-
 
 function indentationLevel(line: vscode.TextLine): number {
     if (!line.isEmptyOrWhitespace) {
@@ -27,15 +33,13 @@ function indentationLevel(line: vscode.TextLine): number {
 }
 
 function insideExpression(line: vscode.TextLine, colno: number): boolean {
-    const opening = new Set('{[(');
-    const closing = new Set('}])');
     let level = 0;
 
     for (let i = 0; i < colno; i++) {
         const letter = line.text[i];
-        if (opening.has(letter)) {
+        if (OPENINGS.has(letter)) {
             level++;
-        } else if (closing.has(letter)) {
+        } else if (CLOSINGS.has(letter)) {
             level--;
         }
     }
@@ -43,7 +47,6 @@ function insideExpression(line: vscode.TextLine, colno: number): boolean {
 }
 
 function dedentAfterLine(line: vscode.TextLine, colno: number): boolean {
-    console.log('inside expression', line.text, colno, insideExpression(line, colno))
     if (insideExpression(line, colno)) {
         return false;
     }
@@ -51,19 +54,17 @@ function dedentAfterLine(line: vscode.TextLine, colno: number): boolean {
 }
 
 function lastOpeningIndex(line: vscode.TextLine, colno: number): number {
-    const matching = new Map([['{', '}'], ['(', ')'], ['[', ']']]);
-    const closing = new Set(matching.values());
     let closingExpected = null;
     const unmatched = [];
     for (let i = 0; i < colno; i++) {
         const c = line.text[i];
-        if (matching.has(c)) {
-            unmatched.push({ char: c, index: i });
-            closingExpected = matching.get(c);
+        if (OPENINGS.has(c)) {
+            unmatched.push({char: c, index: i});
+            closingExpected = MATCHING_MAP[c];
         } else if (c === closingExpected) {
             unmatched.pop();
             if (unmatched.length) {
-                closingExpected = matching.get(unmatched[unmatched.length - 1].char);
+                closingExpected = MATCHING_MAP[unmatched[unmatched.length - 1].char];
             }
         }
     }
@@ -73,26 +74,74 @@ function lastOpeningIndex(line: vscode.TextLine, colno: number): number {
     return -1;
 }
 
-function nextIndentationLevel(document: vscode.TextDocument, lineno: number, colno: number): number {
-    while (lineno >= 0) {
-        const line = document.lineAt(lineno);
+function* backwardDocumentLines(document: vscode.TextDocument, startline = document.lineCount - 1) {
+    for (let lineno = startline; lineno >= 0; lineno--) {
+        yield document.lineAt(lineno);
+    }
+}
+
+function findBackward(
+    char: string,
+    document: vscode.TextDocument,
+    initial: vscode.Position
+): vscode.Position {
+    const currentLine = document.lineAt(initial.line);
+    const index = currentLine.text.lastIndexOf(char, initial.character);
+    if (index !== -1) {
+        return new vscode.Position(initial.line, index + 1);
+    }
+    for (let line of backwardDocumentLines(document, initial.line - 1)) {
+        const index = line.text.lastIndexOf(char);
+        if (index !== -1) {
+            return new vscode.Position(line.lineNumber, index + 1);
+        }
+    }
+    return null;
+}
+
+function nextIndentationLevel(
+    document: vscode.TextDocument,
+    lineno: number,
+    colno: number
+): number {
+    for (let line of backwardDocumentLines(document, lineno)) {
         const lineIndent = indentationLevel(line);
         if (dedentAfterLine(line, colno)) {
+            // if current line is a return / raise / … statement, dedent next line
             return lineIndent - 4;
         }
-        const lastchar = lastNonEmptyChar(line.text, colno);
-        if (lastchar === '(' || lastchar === '{' || lastchar === '[' || lastchar === ':') {
+        const trimmed = rtrimcomment(line.text, colno);
+        if (!trimmed) {
+            continue; // empty line, go backwards
+        }
+        const lastchar = trimmed[trimmed.length - 1];
+        if (CLOSINGS.has(lastchar)) {
+            // if last non empty char is a closing symbol, compute next indentation level
+            // of the character preceding the matching opening symbol.
+            const matchingPos = findBackward(
+                MATCHING_MAP[lastchar],
+                document,
+                new vscode.Position(line.lineNumber, trimmed.length - 1)
+            );
+            return nextIndentationLevel(document, matchingPos.line, matchingPos.character - 1);
+        } else if (OPENINGS.has(lastchar) || lastchar === ':') {
+            // if last non empty char is an opening symbol, indent next line of one extra level
+            // of the character preceding the matching opening symbol.
             return lineIndent + 4;
         } else {
+            // otherwise, if we're in the middle of an expression, align next line on the
+            // opening symbol + 1, else keep the same indentation level as the current line.
             const lastParenIndex = lastOpeningIndex(line, colno);
-            console.log('last paren index', typeof lastParenIndex, lastParenIndex);
             return lastParenIndex === -1 ? lineIndent : lastParenIndex + 1;
         }
     }
 }
 
-
-export function newlineAndIndent(textEditor: vscode.TextEditor, edit: vscode.TextEditorEdit, args: any[]) {
+export function newlineAndIndent(
+    textEditor: vscode.TextEditor,
+    edit: vscode.TextEditorEdit,
+    args: any[]
+) {
     const position = textEditor.selection.active;
     const line = textEditor.document.lineAt(position.line);
     const insertionPoint = new vscode.Position(position.line, position.character);
@@ -100,13 +149,17 @@ export function newlineAndIndent(textEditor: vscode.TextEditor, edit: vscode.Tex
 
     try {
         if (textEditor.document.languageId === 'python') {
-            const indent = nextIndentationLevel(textEditor.document, line.lineNumber, position.character);
+            const indent = nextIndentationLevel(
+                textEditor.document,
+                line.lineNumber,
+                position.character
+            );
             if (indent !== null) {
-                toInsert = '\n' + ' '.repeat(indent);
+                toInsert = '\n' + ' '.repeat(Math.max(indent, 0));
             }
         }
     } finally {
         // we never ever want to crash here, fallback on default "enter" behaviour
         edit.insert(insertionPoint, toInsert);
     }
-}    
+}
