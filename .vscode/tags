@@ -1,0 +1,18 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+A	../test/inputfiles/indented1_sample.py	/^class A(object):$/;"	kind:class	line:1
+A	../test/inputfiles/indented2_sample.py	/^class A(object):$/;"	kind:class	line:1
+A	../test/inputfiles/sample.py	/^class A(object):$/;"	kind:class	line:1
+__init__	../test/inputfiles/indented1_sample.py	/^    def __init__(self, $/;"	kind:member	line:3
+__init__	../test/inputfiles/indented2_sample.py	/^    def __init__(self, param1, param2):$/;"	kind:member	line:3
+__init__	../test/inputfiles/sample.py	/^    def __init__(self, param1, param2):$/;"	kind:member	line:3
+f	../test/inputfiles/indented1_sample.py	/^    def f(self):$/;"	kind:member	line:7
+f	../test/inputfiles/indented2_sample.py	/^    def f(self):$/;"	kind:member	line:6
+f	../test/inputfiles/sample.py	/^    def f(self):$/;"	kind:member	line:6
+indented1_sample.py	../test/inputfiles/indented1_sample.py	1;"	kind:file	line:1
+indented2_sample.py	../test/inputfiles/indented2_sample.py	1;"	kind:file	line:1
+sample.py	../test/inputfiles/sample.py	1;"	kind:file	line:1

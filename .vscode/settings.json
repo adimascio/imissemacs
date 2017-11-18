@@ -5,5 +5,9 @@
     },
     "search.exclude": {
         "out": true // set this to false to include "out" folder in search results
-    }
+    },
+    "python.unitTest.promptToConfigure": false,
+    "python.unitTest.pyTestEnabled": false,
+    "python.unitTest.unittestEnabled": false,
+    "python.unitTest.nosetestsEnabled": false
 }
